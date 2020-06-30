@@ -80,7 +80,7 @@ class Board:
 
 class QuantComp:
     def __init__(self):
-        print('creatd board')
+        print('created board')
 
     def setBoard(self, classical):
         self.classical = classical
@@ -175,6 +175,8 @@ async def websocket_server(websocket, path):
             for i in range(0, len(board)):
                 if board[i] == 3:
                     board[i] = 1
+                else:
+                    board[i] = 0
             q.setBoard(board)
         if cmdDict['event'] == 'turn':
             guess = q.guess()
