@@ -1,0 +1,3 @@
+[submodule "QuantumBattleship"]
+	path = QuantumBattleship
+	url = https://github.com/willhamilton24/QuantumBattleship
