@@ -150,105 +150,6 @@ class QuantComp:
         stng = list(execute(qc, backend = simulator, shots = 1).result().get_counts().keys())[0]
         return int(stng, 2)
 
-
-class clAssComp:
-    def __init__(self):
-        print("classical bot init")
-
-    def setBoard(self, player):
-        self.player = player
-        self.hunt = True
-        self.last = -1
-        self.grid = [0,1,0,1,0,1,0,1,0,1,
-                     1,0,1,0,1,0,1,0,1,0,
-                     0,1,0,1,0,1,0,1,0,1,
-                     1,0,1,0,1,0,1,0,1,0,
-                     0,1,0,1,0,1,0,1,0,1,
-                     1,0,1,0,1,0,1,0,1,0,
-                     0,1,0,1,0,1,0,1,0,1,
-                     1,0,1,0,1,0,1,0,1,0,
-                     0,1,0,1,0,1,0,1,0,1,
-                     1,0,1,0,1,0,1,0,1,0]
-    
-    def hit(self, index):
-        if self.hunt:
-            self.hunt = False
-        self.grid[index] = 3
-        self.last = index
-        
-    def miss(self, index):
-        self.grid[index] = 2
-        
-    def sunk(self):
-        self.hunt = True
-    
-    def search(self, index):
-        top = -1
-        right = -1
-        bottom = -1
-        left = -1
-        if index > 9:
-            top = self.grid[index - 10]
-        if index%10 < 9:
-            right = self.grid[index + 1]
-        if index < 90:
-            bottom = self.grid[index + 10]
-        if index%10 > 0:
-            left = self.grid[index - 1]
-        if top == 3 & (bottom == 1 | bottom == 0):
-            return index + 10
-        if right == 3 & (left == 1 | left == 0):
-            return index - 1
-        if bottom == 3 & (top == 1 | top == 0):
-            return index - 10
-        if left == 3 & (right == 1 | right == 0):
-            return index + 1
-        if top == 0 | top == 1:
-            return index - 10
-        if right == 0 | right == 1:
-            return index + 1
-        if bottom == 0 | bottom == 1:
-            return index + 10
-        if left == 0 | left == 1:
-            return index - 1
-        if top == 3:
-            while bottom == 3:
-                bottom = self.grid[index + 10]
-            if bottom == 0 | bottom == 1:
-                return index + 10
-        if left == 3:
-            while right == 3:
-                right = self.grid[index + 1]
-            if right == 0 | right == 1:
-                return index + 1
-        if right == 3:
-            while left == 3:
-                left = self.grid[index - 1]
-            if left == 0 | left == 1:
-                return index - 1
-        if bottom == 3:
-            while top == 3:
-                top = self.grid[index - 10]
-            if top == 0 | top == 1:
-                return index - 10
-        
-    def update(self, index):
-        if self.player[index] == 0:
-            self.miss(index)
-        else:
-            self.hit(index)
-    
-    def guess(self):
-        if self.hunt:
-            while True:
-                rand = randint(0,98)
-                if self.grid[rand] == 0:
-                    self.update(rand)
-                    return rand
-        new = self.search(self.last)
-        self.update(new)
-        return new
-
 app = Flask(__name__, static_folder="./QuantumBattleship/build")
 
 @app.route('/', defaults={'path': ''})
@@ -260,7 +161,6 @@ def serve(path):
         return send_from_directory(app.static_folder, 'index.html')
 
 q = QuantComp()
-c = clAssComp()
 async def websocket_server(websocket, path):
     async for cmd in websocket:
         cmdDict = json.loads(cmd)
@@ -282,26 +182,9 @@ async def websocket_server(websocket, path):
             q.classical[guess] = 0
             await websocket.send('{"event": "guess", "target": ' + str(guess) + '}')
 
-        #classical bot
-        if cmdDict['event'] == 'c_start':
-            sep = ', '
-            await websocket.send('{"event": "c_q-board", "quantumBoard": ' + str(Board().place()) + '}')
-        if cmdDict['event'] == 'c_p-board':
-            board = cmdDict['playerBoard']
-            for i in range(0, len(board)):
-                if board[i] == 3:
-                    board[i] = 1
-                else:
-                    board[i] = 0
-            c.setBoard(board)
-        if cmdDict['event'] == 'c_turn':
-            guess = c.guess()
-            q.classical[guess] = 0
-            await websocket.send('{"event": "c_guess", "target": ' + str(guess) + '}')
-
 
 def thread():
-    app.run(use_reloader=False, port=80, threaded=True)
+    app.run(use_reloader=False, port=8080, threaded=True)
 
 if __name__ == '__main__':
     threading.Thread(target=thread).start()
