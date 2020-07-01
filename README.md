@@ -2,7 +2,7 @@
 ### By the Duke Blue group for the 2020 Qiskit Community Summer Jam - North Carolina
 ### Brandon Weiss, Noah Citron, and Will Hamilton
 
-To play game, go to [INSERT URL]
+To play game, go to http://quantumbattleship.com
 
 This project allows the user to play battleship against a quantum computer. Using IBM Qiskit's open source software, we 
 used Grover's Algorithm to have a quantum computer get a hit ~97.8% of the time. In the future, we plan to let the user 
