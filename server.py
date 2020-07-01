@@ -285,7 +285,7 @@ async def websocket_server(websocket, path):
         #classical bot
         if cmdDict['event'] == 'c_start':
             sep = ', '
-            await websocket.send('{"event": "q-board", "quantumBoard": ' + str(Board().place()) + '}')
+            await websocket.send('{"event": "c_q-board", "quantumBoard": ' + str(Board().place()) + '}')
         if cmdDict['event'] == 'c_p-board':
             board = cmdDict['playerBoard']
             for i in range(0, len(board)):
@@ -297,7 +297,7 @@ async def websocket_server(websocket, path):
         if cmdDict['event'] == 'c_turn':
             guess = c.guess()
             q.classical[guess] = 0
-            await websocket.send('{"event": "guess", "target": ' + str(guess) + '}')
+            await websocket.send('{"event": "c_guess", "target": ' + str(guess) + '}')
 
 
 def thread():
