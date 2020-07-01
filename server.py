@@ -301,7 +301,7 @@ async def websocket_server(websocket, path):
 
 
 def thread():
-    app.run(use_reloader=False, port=8080, threaded=True)
+    app.run(use_reloader=False, port=80, threaded=True)
 
 if __name__ == '__main__':
     threading.Thread(target=thread).start()
